@@ -25,6 +25,13 @@
             <i class="ph-bold ph-package me-1"></i> Products
           </a>
         </li>
+        <?php if(isAdmin()) : ?>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center" href="<?php echo URLROOT; ?>/reports">
+            <i class="ph-bold ph-chart-line-up me-1"></i> Reports
+          </a>
+        </li>
+        <?php endif; ?>
         <li class="nav-item ms-lg-3">
             <a class="btn btn-primary px-4" href="<?php echo URLROOT; ?>/pos">
                 <i class="ph-bold ph-calculator me-1"></i> POS TERMINAL

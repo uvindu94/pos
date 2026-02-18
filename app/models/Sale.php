@@ -101,4 +101,49 @@ class Sale {
         $this->db->query('SELECT sales.*, users.name as user_name FROM sales JOIN users ON sales.user_id = users.id ORDER BY created_at DESC LIMIT 5');
         return $this->db->resultSet();
     }
+
+    // --- Analytics Methods ---
+
+    public function getSalesByRange($start, $end){
+        $this->db->query('SELECT s.*, u.name as cashier_name 
+                          FROM sales s 
+                          JOIN users u ON s.user_id = u.id 
+                          WHERE DATE(s.created_at) BETWEEN :start AND :end 
+                          ORDER BY s.created_at DESC');
+        $this->db->bind(':start', $start);
+        $this->db->bind(':end', $end);
+        return $this->db->resultSet();
+    }
+
+    public function getDailySalesStats($start, $end){
+        $this->db->query('SELECT DATE(created_at) as sale_date, SUM(total) as daily_total, COUNT(*) as order_count 
+                          FROM sales 
+                          WHERE DATE(created_at) BETWEEN :start AND :end 
+                          GROUP BY DATE(created_at) 
+                          ORDER BY DATE(created_at) ASC');
+        $this->db->bind(':start', $start);
+        $this->db->bind(':end', $end);
+        return $this->db->resultSet();
+    }
+
+    public function getTopSellingProducts($limit = 5){
+        $this->db->query('SELECT p.name, SUM(si.quantity) as total_qty, SUM(si.total) as total_revenue, c.name as category_name
+                          FROM sale_items si
+                          JOIN products p ON si.product_id = p.id
+                          JOIN categories c ON p.category_id = c.id
+                          GROUP BY si.product_id
+                          ORDER BY total_qty DESC
+                          LIMIT :limit');
+        $this->db->bind(':limit', $limit);
+        return $this->db->resultSet();
+    }
+
+    public function getGlobalStats($start, $end){
+        $this->db->query('SELECT SUM(total) as total_revenue, COUNT(*) as total_orders, AVG(total) as avg_order_value 
+                          FROM sales 
+                          WHERE DATE(created_at) BETWEEN :start AND :end');
+        $this->db->bind(':start', $start);
+        $this->db->bind(':end', $end);
+        return $this->db->single();
+    }
 }
