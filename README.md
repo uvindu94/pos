@@ -2,7 +2,7 @@
 
 A world-class, industry-leading Point of Sale (POS) system built with vanilla PHP and a premium, high-performance UI/UX. This project features a modern, touch-optimized terminal, a Bento Grid performance dashboard, and a sophisticated design system inspired by industry leaders like Square and Stripe.
 
-![Premium POS Dashboard](https://github.com/user-attachments/assets/placeholder-dashboard)
+![Premium POS Dashboard](assets/screenshots/placeholder-dashboard.png)
 
 ## ✨ Key Features
 
@@ -68,7 +68,7 @@ A world-class, industry-leading Point of Sale (POS) system built with vanilla PH
 
 | Dashboard | POS Terminal |
 |-----------|--------------|
-| ![Dashboard] | ![POS Terminal] |
+| ![Dashboard](assets/screenshots/placeholder-dashboard.png) | *Coming Soon* |
 
 ## 🤝 Contributing
 Contributions are welcome! Please feel free to submit a Pull Request.
