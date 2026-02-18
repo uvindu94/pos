@@ -46,7 +46,7 @@ A world-class, industry-leading Point of Sale (POS) system built with vanilla PH
 ### Installation
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/pos-system.git
+   git clone https://github.com/uvindu94/pos-system.git
    ```
 2. **Setup Database**:
    - Open phpMyAdmin.
