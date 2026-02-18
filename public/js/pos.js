@@ -16,7 +16,7 @@ $(document).ready(function () {
                     if (products.length > 0) {
                         products.forEach(p => {
                             output += `
-                                <div class="pos-product-card" onclick="addToCart(${p.id}, '${p.name}', ${p.price})">
+                                <div class="pos-product-card" onclick="addToCart(${p.id}, '${p.name}', ${p.price}, ${p.stock})">
                                     <div class="product-info">
                                         <div class="product-name" title="${p.name}">${p.name}</div>
                                         <div class="product-price">$${parseFloat(p.price).toFixed(2)}</div>
@@ -124,12 +124,20 @@ $(document).ready(function () {
     }
 });
 
-function addToCart(id, name, price) {
+function addToCart(id, name, price, stock) {
     let existing = cart.find(item => item.id === id);
     if (existing) {
+        if (existing.qty + 1 > stock) {
+            alert('Insufficient stock for ' + name + '. Only ' + stock + ' available.');
+            return;
+        }
         existing.qty++;
     } else {
-        cart.push({ id: id, name: name, price: parseFloat(price), qty: 1 });
+        if (1 > stock) {
+            alert('Item ' + name + ' is out of stock.');
+            return;
+        }
+        cart.push({ id: id, name: name, price: parseFloat(price), qty: 1, stock: stock });
     }
     updateCartUI();
 }
@@ -142,6 +150,10 @@ function removeFromCart(id) {
 function updateQty(id, delta) {
     let item = cart.find(item => item.id === id);
     if (item) {
+        if (delta > 0 && item.qty + delta > item.stock) {
+            alert('Insufficient stock. Only ' + item.stock + ' available.');
+            return;
+        }
         item.qty += delta;
         if (item.qty <= 0) {
             removeFromCart(id);
@@ -154,7 +166,14 @@ function updateQty(id, delta) {
 function setQty(id, val) {
     let item = cart.find(item => item.id === id);
     if (item) {
-        item.qty = parseInt(val) || 0;
+        let newQty = parseInt(val) || 0;
+        if (newQty > item.stock) {
+            alert('Insufficient stock. Only ' + item.stock + ' available.');
+            item.qty = item.stock; // Cap at max
+        } else {
+            item.qty = newQty;
+        }
+
         if (item.qty <= 0) {
             removeFromCart(id);
         } else {

@@ -30,6 +30,19 @@ class Sale {
 
             // 2. Insert Sale Items and Update Stock
             foreach($data['cart'] as $item){
+                // Check current stock first
+                $this->db->query('SELECT stock, name FROM products WHERE id = :id FOR UPDATE');
+                $this->db->bind(':id', $item['id']);
+                $product = $this->db->single();
+                
+                if(!$product){
+                    throw new Exception("Product ID " . $item['id'] . " not found.");
+                }
+                
+                if($product->stock < $item['qty']){
+                    throw new Exception("Insufficient stock for " . $product->name . ". Available: " . $product->stock . ", Requested: " . $item['qty']);
+                }
+
                 // Insert Item
                 $this->db->query('INSERT INTO sale_items (sale_id, product_id, quantity, price, total) VALUES(:sale_id, :product_id, :quantity, :price, :total)');
                 $this->db->bind(':sale_id', $sale_id);
@@ -40,7 +53,6 @@ class Sale {
                 $this->db->execute();
 
                 // Update Stock
-                // First get current stock to be safe, or just decrement
                 $this->db->query('UPDATE products SET stock = stock - :qty WHERE id = :id');
                 $this->db->bind(':qty', $item['qty']);
                 $this->db->bind(':id', $item['id']);
