@@ -699,14 +699,47 @@ p {
 /* Gradient backgrounds */
 .bg-gradient-primary {
     background: linear-gradient(135deg, var(--accent-primary), #3651CE);
+    color: white !important;
+}
+
+.bg-gradient-primary h1,
+.bg-gradient-primary h2,
+.bg-gradient-primary h3,
+.bg-gradient-primary h4,
+.bg-gradient-primary h5,
+.bg-gradient-primary h6,
+.bg-gradient-primary p,
+.bg-gradient-primary i {
+    color: white !important;
 }
 
 .bg-gradient-success {
     background: linear-gradient(135deg, var(--accent-success), #059669);
+    color: white !important;
 }
 
-.bg-gradient-danger {
-    background: linear-gradient(135deg, var(--accent-danger), #DC2626);
+.bg-gradient-danger h1,
+.bg-gradient-danger h2,
+.bg-gradient-danger h3,
+.bg-gradient-danger h4,
+.bg-gradient-danger h5,
+.bg-gradient-danger h6,
+.bg-gradient-danger p,
+.bg-gradient-danger i {
+    color: white !important;
+}
+
+/* Ensure white text for Bootstrap primary-gradient combinations too */
+.bg-primary.bg-gradient h1,
+.bg-primary.bg-gradient h2,
+.bg-primary.bg-gradient h3,
+.bg-primary.bg-gradient h4,
+.bg-primary.bg-gradient h5,
+.bg-primary.bg-gradient h6,
+.bg-primary.bg-gradient p,
+.bg-primary.bg-gradient i,
+.bg-primary.bg-gradient span:not(.badge) {
+    color: white !important;
 }
 
 /* ============================================
