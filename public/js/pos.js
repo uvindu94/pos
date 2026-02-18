@@ -2,42 +2,12 @@ const URLROOT = 'http://localhost/pos'; // Update if needed
 let cart = [];
 
 $(document).ready(function () {
+    // Initial Load
+    fetchProducts();
+
     // Search Product
     $('#search_product').on('keyup', function () {
-        let query = $(this).val();
-        if (query.length > 1) {
-            $.ajax({
-                url: URLROOT + '/pos/search_products',
-                method: 'POST',
-                data: { query: query },
-                success: function (response) {
-                    let products = JSON.parse(response);
-                    let output = '';
-                    if (products.length > 0) {
-                        products.forEach(p => {
-                            output += `
-                                <div class="pos-product-card" onclick="addToCart(${p.id}, '${p.name}', ${p.price}, ${p.stock})">
-                                    <div class="product-info">
-                                        <div class="product-name" title="${p.name}">${p.name}</div>
-                                        <div class="product-price">$${parseFloat(p.price).toFixed(2)}</div>
-                                    </div>
-                                    <div class="product-stock">
-                                        <span class="badge ${p.stock < 10 ? 'bg-danger' : 'bg-secondary'}">Stock: ${p.stock}</span>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                    } else {
-                        output = '<div class="col-12 text-center text-muted p-5">No products found</div>';
-                    }
-                    $('#product-list').html(output);
-                    $('#initial-message').hide();
-                }
-            });
-        } else {
-            // If empty, you might want to show initial message again 
-            // or keep last results. Let's show search results if any.
-        }
+        fetchProducts($(this).val());
     });
 
     // Checkout
@@ -293,4 +263,35 @@ function calculateChange() {
     } else {
         $('#change-display').slideUp();
     }
+}
+
+function fetchProducts(query = '') {
+    $.ajax({
+        url: URLROOT + '/pos/search_products',
+        method: 'POST',
+        data: { query: query },
+        success: function (response) {
+            let products = JSON.parse(response);
+            let output = '';
+            if (products.length > 0) {
+                products.forEach(p => {
+                    output += `
+                        <div class="pos-product-card" onclick="addToCart(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${p.price}, ${p.stock})">
+                            <div class="product-info">
+                                <div class="product-name" title="${p.name}">${p.name}</div>
+                                <div class="product-price">$${parseFloat(p.price).toFixed(2)}</div>
+                            </div>
+                            <div class="product-stock">
+                                <span class="badge ${p.stock < 10 ? 'bg-danger' : 'bg-secondary'}">Stock: ${p.stock}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                output = '<div class="col-12 text-center text-muted p-5">No products found</div>';
+            }
+            $('#product-list').html(output);
+            $('#initial-message').hide();
+        }
+    });
 }
