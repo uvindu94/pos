@@ -15,11 +15,12 @@ class Product {
     }
 
     public function addProduct($data){
-        $this->db->query('INSERT INTO products (name, barcode, description, price, stock, category_id) VALUES(:name, :barcode, :description, :price, :stock, :category_id)');
+        $this->db->query('INSERT INTO products (name, barcode, description, price, sale_price, stock, category_id) VALUES(:name, :barcode, :description, :price, :sale_price, :stock, :category_id)');
         $this->db->bind(':name', $data['name']);
         $this->db->bind(':barcode', $data['barcode']);
         $this->db->bind(':description', $data['description']);
         $this->db->bind(':price', $data['price']);
+        $this->db->bind(':sale_price', $data['sale_price']);
         $this->db->bind(':stock', $data['stock']);
         $this->db->bind(':category_id', $data['category_id']);
 
@@ -31,12 +32,13 @@ class Product {
     }
 
     public function updateProduct($data){
-        $this->db->query('UPDATE products SET name = :name, barcode = :barcode, description = :description, price = :price, stock = :stock, category_id = :category_id WHERE id = :id');
+        $this->db->query('UPDATE products SET name = :name, barcode = :barcode, description = :description, price = :price, sale_price = :sale_price, stock = :stock, category_id = :category_id WHERE id = :id');
         $this->db->bind(':id', $data['id']);
         $this->db->bind(':name', $data['name']);
         $this->db->bind(':barcode', $data['barcode']);
         $this->db->bind(':description', $data['description']);
         $this->db->bind(':price', $data['price']);
+        $this->db->bind(':sale_price', $data['sale_price']);
         $this->db->bind(':stock', $data['stock']);
         $this->db->bind(':category_id', $data['category_id']);
 

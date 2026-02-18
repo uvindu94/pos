@@ -47,8 +47,17 @@
                         <div class="col-md-3">
                              <div class="form-floating mb-3">
                                 <input type="number" step="0.01" name="price" class="form-control <?php echo (!empty($data['price_err'])) ? 'is-invalid' : ''; ?>" id="price" placeholder="Price" value="<?php echo $data['price']; ?>">
-                                <label for="price">Price *</label>
+                                <label for="price">Regular Price *</label>
                                 <span class="invalid-feedback"><?php echo $data['price_err']; ?></span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                             <div class="form-floating mb-3">
+                                <input type="number" step="0.01" name="sale_price" class="form-control <?php echo (!empty($data['sale_price_err'])) ? 'is-invalid' : ''; ?>" id="sale_price" placeholder="Sale Price" value="<?php echo $data['sale_price']; ?>">
+                                <label for="sale_price">Sale Price</label>
+                                <span class="invalid-feedback"><?php echo $data['sale_price_err']; ?></span>
+                                <div class="form-text small">Leave empty if not on sale</div>
                             </div>
                         </div>
                         

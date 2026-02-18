@@ -47,15 +47,25 @@
                         <!-- Product Highlight Strip -->
                         <div class="bg-primary bg-opacity-10 py-4 text-center position-relative">
                             <i class="ph ph-cube fa-4x text-primary opacity-25"></i>
-                            <div class="position-absolute top-0 end-0 p-2">
+                            <div class="position-absolute top-0 end-0 p-2 d-flex flex-column gap-1 align-items-end">
                                 <span class="badge <?php echo $stockStatus; ?> shadow-sm"><?php echo $statusLabel; ?></span>
+                                <?php if(!empty($product->sale_price)) : ?>
+                                    <span class="badge bg-danger shadow-sm anim-pulse">SALE</span>
+                                <?php endif; ?>
                             </div>
                         </div>
 
                         <div class="p-4">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div class="d-flex justify-content-between align-items-start mb-2 gap-2">
                                 <h5 class="fw-bold text-dark mb-0 text-truncate" title="<?php echo $product->name; ?>"><?php echo $product->name; ?></h5>
-                                <span class="h5 fw-bold text-primary mb-0"><?php echo CURRENCY; ?><?php echo number_format($product->price, 2); ?></span>
+                                <div class="text-end">
+                                    <?php if(!empty($product->sale_price)) : ?>
+                                        <div class="text-muted small text-decoration-line-through"><?php echo CURRENCY; ?><?php echo number_format($product->price, 2); ?></div>
+                                        <span class="h5 fw-bold text-danger mb-0"><?php echo CURRENCY; ?><?php echo number_format($product->sale_price, 2); ?></span>
+                                    <?php else : ?>
+                                        <span class="h5 fw-bold text-primary mb-0"><?php echo CURRENCY; ?><?php echo number_format($product->price, 2); ?></span>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                             <div class="d-flex align-items-center mb-3">
                                 <span class="badge bg-light text-secondary border small py-1 px-2">

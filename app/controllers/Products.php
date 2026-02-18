@@ -29,11 +29,13 @@ class Products extends Controller {
                 'barcode' => trim($_POST['barcode']),
                 'description' => trim($_POST['description']),
                 'price' => trim($_POST['price']),
+                'sale_price' => !empty($_POST['sale_price']) ? trim($_POST['sale_price']) : NULL,
                 'stock' => trim($_POST['stock']),
                 'category_id' => trim($_POST['category_id']),
                 'name_err' => '',
                 'barcode_err' => '',
-                'price_err' => ''
+                'price_err' => '',
+                'sale_price_err' => ''
             ];
 
             // Validate Name
@@ -47,8 +49,17 @@ class Products extends Controller {
                 $data['price_err'] = 'Please enter price';
             }
 
+            // Validate Sale Price
+            if(!empty($data['sale_price'])){
+                if(!is_numeric($data['sale_price'])){
+                    $data['sale_price_err'] = 'Sale price must be a number';
+                } elseif($data['sale_price'] >= $data['price']){
+                    $data['sale_price_err'] = 'Sale price should be less than regular price';
+                }
+            }
+
             // Make sure no errors
-            if(empty($data['name_err']) && empty($data['barcode_err']) && empty($data['price_err'])){
+            if(empty($data['name_err']) && empty($data['barcode_err']) && empty($data['price_err']) && empty($data['sale_price_err'])){
                 // Validated
                 if($this->productModel->addProduct($data)){
                     flash('product_message', 'Product Added');
@@ -71,6 +82,7 @@ class Products extends Controller {
                 'barcode' => '',
                 'description' => '',
                 'price' => '',
+                'sale_price' => '',
                 'stock' => '',
                 'category_id' => '',
                 'categories' => $categories
@@ -91,11 +103,13 @@ class Products extends Controller {
                 'barcode' => trim($_POST['barcode']),
                 'description' => trim($_POST['description']),
                 'price' => trim($_POST['price']),
+                'sale_price' => !empty($_POST['sale_price']) ? trim($_POST['sale_price']) : NULL,
                 'stock' => trim($_POST['stock']),
                 'category_id' => trim($_POST['category_id']),
                 'name_err' => '',
                 'barcode_err' => '',
-                'price_err' => ''
+                'price_err' => '',
+                'sale_price_err' => ''
             ];
 
             // Validate Name
@@ -109,8 +123,17 @@ class Products extends Controller {
                 $data['price_err'] = 'Please enter price';
             }
 
+            // Validate Sale Price
+            if(!empty($data['sale_price'])){
+                if(!is_numeric($data['sale_price'])){
+                    $data['sale_price_err'] = 'Sale price must be a number';
+                } elseif($data['sale_price'] >= $data['price']){
+                    $data['sale_price_err'] = 'Sale price should be less than regular price';
+                }
+            }
+
             // Make sure no errors
-            if(empty($data['name_err']) && empty($data['barcode_err']) && empty($data['price_err'])){
+            if(empty($data['name_err']) && empty($data['barcode_err']) && empty($data['price_err']) && empty($data['sale_price_err'])){
                 // Validated
                 if($this->productModel->updateProduct($data)){
                     flash('product_message', 'Product Updated');
@@ -141,6 +164,7 @@ class Products extends Controller {
                 'barcode' => $product->barcode,
                 'description' => $product->description,
                 'price' => $product->price,
+                'sale_price' => $product->sale_price,
                 'stock' => $product->stock,
                 'category_id' => $product->category_id,
                 'categories' => $categories

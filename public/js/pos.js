@@ -126,7 +126,9 @@ $(document).ready(function () {
     }
 });
 
-function addToCart(id, name, price, stock) {
+function addToCart(id, name, price, stock, sale_price = null) {
+    let activePrice = (sale_price && parseFloat(sale_price) > 0) ? parseFloat(sale_price) : parseFloat(price);
+
     let existing = cart.find(item => item.id === id);
     if (existing) {
         if (existing.qty + 1 > stock) {
@@ -149,7 +151,15 @@ function addToCart(id, name, price, stock) {
             });
             return;
         }
-        cart.push({ id: id, name: name, price: parseFloat(price), qty: 1, stock: stock });
+        cart.push({
+            id: id,
+            name: name,
+            price: activePrice,
+            regular_price: parseFloat(price),
+            qty: 1,
+            stock: stock,
+            is_on_sale: (sale_price && parseFloat(sale_price) > 0)
+        });
     }
     updateCartUI();
 }
@@ -216,11 +226,17 @@ function updateCartUI() {
         cart.forEach(item => {
             let total = item.price * item.qty;
             subtotal += total;
+
+            let priceDisplay = `<strong>${CURRENCY}${item.price.toFixed(2)}</strong>`;
+            if (item.is_on_sale) {
+                priceDisplay = `<span class="text-muted text-decoration-line-through small me-1">${CURRENCY}${item.regular_price.toFixed(2)}</span> ` + priceDisplay;
+            }
+
             html += `
                 <div class="cart-item">
                     <div class="cart-item-details">
                         <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-price">${CURRENCY}${item.price.toFixed(2)} x ${item.qty} = <strong>${CURRENCY}${total.toFixed(2)}</strong></div>
+                        <div class="cart-item-price">${priceDisplay} x ${item.qty} = <strong>${CURRENCY}${total.toFixed(2)}</strong></div>
                     </div>
                     <div class="cart-item-controls">
                         <button class="qty-btn" onclick="updateQty(${item.id}, -1)"><i class="fa fa-minus"></i></button>
@@ -281,16 +297,26 @@ function fetchProducts(query = '') {
                 let output = '';
                 if (Array.isArray(products) && products.length > 0) {
                     products.forEach(p => {
-                        const price = parseFloat(p.price) || 0;
+                        const regPrice = parseFloat(p.price) || 0;
+                        const salePrice = p.sale_price ? parseFloat(p.sale_price) : 0;
                         const currencySymbol = typeof CURRENCY !== 'undefined' ? CURRENCY : '$';
 
+                        let priceHtml = '';
+                        if (salePrice > 0) {
+                            priceHtml = `<span class="text-muted text-decoration-line-through small me-1">${currencySymbol}${regPrice.toFixed(2)}</span>
+                                         <span class="text-danger fw-bold">${currencySymbol}${salePrice.toFixed(2)}</span>`;
+                        } else {
+                            priceHtml = `<span>${currencySymbol}${regPrice.toFixed(2)}</span>`;
+                        }
+
                         output += `
-                            <div class="pos-product-card" onclick="addToCart(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${price}, ${p.stock})">
+                            <div class="pos-product-card" onclick="addToCart(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${regPrice}, ${p.stock}, ${salePrice})">
                                 <div class="product-info">
                                     <div class="product-name" title="${p.name}">${p.name}</div>
-                                    <div class="product-price">${currencySymbol}${price.toFixed(2)}</div>
+                                    <div class="product-price">${priceHtml}</div>
                                 </div>
-                                <div class="product-stock">
+                                <div class="product-stock text-end">
+                                    ${salePrice > 0 ? '<span class="badge bg-danger mb-1 d-block">SALE</span>' : ''}
                                     <span class="badge ${p.stock < 10 ? 'bg-danger' : 'bg-secondary'}">Stock: ${p.stock}</span>
                                 </div>
                             </div>

@@ -23,7 +23,15 @@ class Pos extends Controller {
             $results = [];
             foreach($products as $product){
                 if(stripos($product->name, $query) !== false || stripos($product->barcode, $query) !== false){
-                    $results[] = $product;
+                    $results[] = [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'barcode' => $product->barcode,
+                        'price' => $product->price,
+                        'sale_price' => $product->sale_price,
+                        'stock' => $product->stock,
+                        'category_name' => $product->category_name
+                    ];
                 }
             }
             echo json_encode($results);
