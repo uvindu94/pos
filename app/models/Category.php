@@ -10,7 +10,7 @@ class Category {
         $this->db->query('SELECT c.*, p.name as parent_name 
                           FROM categories c 
                           LEFT JOIN categories p ON c.parent_id = p.id 
-                          ORDER BY c.parent_id, c.name');
+                          ORDER BY COALESCE(c.parent_id, c.id), c.parent_id IS NOT NULL, c.name');
         return $this->db->resultSet();
     }
 

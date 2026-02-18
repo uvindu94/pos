@@ -1,17 +1,15 @@
 <?php require APPROOT . '/views/inc/header.php'; ?>
-<div class="row mb-4">
-    <div class="col-md-12">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h2 class="h3 mb-0 text-gray-800">Categories</h2>
-                <p class="text-muted">Organize your products into categories and sub-categories</p>
-            </div>
-            <?php if(isAdmin()) : ?>
-            <a href="<?php echo URLROOT; ?>/categories/add" class="btn btn-primary shadow-sm">
-                <i class="fas fa-plus fa-sm text-white-50 me-2"></i>Add New Category
-            </a>
-            <?php endif; ?>
-        </div>
+<div class="row mb-4 align-items-center py-5">
+    <div class="col-md-6">
+        <h1 class="h2 mb-1 fw-bold text-dark">Category Management</h1>
+        <p class="text-secondary mb-0">Organize your products into a hierarchical catalog</p>
+    </div>
+    <div class="col-md-6 text-md-end mt-3 mt-md-0">
+        <?php if(isAdmin()) : ?>
+        <a href="<?php echo URLROOT; ?>/categories/add" class="btn btn-primary px-4 shadow-sm">
+            <i class="ph-bold ph-plus me-2"></i>New Category
+        </a>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -39,32 +37,47 @@
                         <tr><td colspan="4" class="text-center py-4 text-muted">No categories found. Add one to get started!</td></tr>
                     <?php else : ?>
                         <?php foreach($data['categories'] as $category) : ?>
-                            <tr>
-                                <td class="align-middle"><span class="badge bg-secondary"><?php echo $category->id; ?></span></td>
-                                <td class="align-middle font-weight-bold">
+                            <tr class="<?php echo $category->parent_id ? 'table-light' : 'fw-bold bg-light bg-opacity-10'; ?>">
+                                <td class="align-middle">
+                                    <span class="badge <?php echo $category->parent_id ? 'bg-secondary bg-opacity-50' : 'bg-primary'; ?>">
+                                        <?php echo $category->id; ?>
+                                    </span>
+                                </td>
+                                <td class="align-middle">
                                     <?php if($category->parent_id) : ?>
-                                        <i class="fas fa-level-up-alt fa-rotate-90 text-muted me-2"></i>
+                                        <span class="ms-4 text-muted small">
+                                            <i class="ph-bold ph-arrow-elbow-down-right me-2"></i>
+                                            <span class="text-dark"><?php echo $category->name; ?></span>
+                                        </span>
+                                    <?php else : ?>
+                                        <i class="ph-fill ph-folder-open me-2 text-primary"></i>
+                                        <?php echo $category->name; ?>
                                     <?php endif; ?>
-                                    <?php echo $category->name; ?>
                                 </td>
                                 <td class="align-middle">
                                     <?php if($category->parent_name) : ?>
-                                        <span class="badge bg-light text-dark border"><?php echo $category->parent_name; ?></span>
+                                        <span class="badge bg-white text-primary border shadow-sm px-3 py-2">
+                                            <i class="ph ph-folder me-1"></i><?php echo $category->parent_name; ?>
+                                        </span>
                                     <?php else : ?>
-                                        <span class="text-muted">—</span>
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2">
+                                            <i class="ph-bold ph-crown me-1"></i>Parent Category
+                                        </span>
                                     <?php endif; ?>
                                 </td>
                                 <?php if(isAdmin()) : ?>
                                 <td class="align-middle text-center">
-                                    <a href="<?php echo URLROOT; ?>/categories/edit/<?php echo $category->id; ?>" class="btn btn-sm btn-outline-primary" title="Edit">
-                                        <i class="fa fa-pen"></i>
-                                    </a>
-                                    <!-- Delete Form -->
-                                    <form class="d-inline confirm-delete" action="<?php echo URLROOT; ?>/categories/delete/<?php echo $category->id; ?>" method="post" data-title="Delete Category?" data-text="This will permanently delete '<?php echo $category->name; ?>'. Products in this category may become uncategorized.">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
-                                    </form>
+                                    <div class="d-flex gap-2 justify-content-center">
+                                        <a href="<?php echo URLROOT; ?>/categories/edit/<?php echo $category->id; ?>" class="btn btn-sm btn-light rounded-pill p-2" title="Edit">
+                                            <i class="ph-bold ph-pencil-simple text-primary"></i>
+                                        </a>
+                                        <!-- Delete Form -->
+                                        <form class="d-inline confirm-delete" action="<?php echo URLROOT; ?>/categories/delete/<?php echo $category->id; ?>" method="post" data-title="Delete Category?" data-text="This will permanently delete '<?php echo $category->name; ?>'. Products in this category may become uncategorized.">
+                                            <button type="submit" class="btn btn-sm btn-light rounded-pill p-2" title="Delete">
+                                                <i class="ph-bold ph-trash text-danger"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                                 <?php endif; ?>
                             </tr>

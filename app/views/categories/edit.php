@@ -1,35 +1,41 @@
 <?php require APPROOT . '/views/inc/header.php'; ?>
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-primary">Edit Category</h6>
-                <a href="<?php echo URLROOT; ?>/categories" class="btn btn-sm btn-light"><i class="fa fa-arrow-left me-1"></i> Back to List</a>
-            </div>
-            <div class="card-body">
-                <form action="<?php echo URLROOT; ?>/categories/edit/<?php echo $data['id']; ?>" method="post">
-                    <div class="form-floating mb-3">
-                        <input type="text" name="name" class="form-control <?php echo (!empty($data['name_err'])) ? 'is-invalid' : ''; ?>" id="name" placeholder="Category Name" value="<?php echo $data['name']; ?>">
-                        <label for="name">Category Name *</label>
-                        <span class="invalid-feedback"><?php echo $data['name_err']; ?></span>
-                    </div>
-                    
-                    <div class="form-floating mb-3">
-                        <select name="parent_id" class="form-select" id="parent">
-                            <option value="">None (Parent Category)</option>
-                            <?php foreach($data['parentCategories'] as $parent) : ?>
-                                <?php if($parent->id != $data['id']) : ?>
-                                <option value="<?php echo $parent->id; ?>" <?php echo ($data['parent_id'] == $parent->id) ? 'selected' : ''; ?>><?php echo $parent->name; ?></option>
-                                <?php endif; ?>
-                            <?php endforeach; ?>
-                        </select>
-                        <label for="parent">Parent Category</label>
-                    </div>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="glass-card shadow-xl p-0 overflow-hidden border-0">
+                <div class="bg-primary bg-gradient p-4 text-center text-white position-relative">
+                    <i class="ph-bold ph-pencil-line display-4 opacity-25"></i>
+                    <h2 class="fw-bold mt-2">Edit Category</h2>
+                    <p class="opacity-75 small mb-0">Modify category details and relationships</p>
+                </div>
+                <div class="p-4">
+                    <form action="<?php echo URLROOT; ?>/categories/edit/<?php echo $data['id']; ?>" method="post">
+                        <div class="form-floating mb-3">
+                            <input type="text" name="name" class="form-control <?php echo (!empty($data['name_err'])) ? 'is-invalid' : ''; ?>" id="name" placeholder="Category Name" value="<?php echo $data['name']; ?>">
+                            <label for="name"><i class="ph ph-tag me-2"></i>Category Name</label>
+                            <span class="invalid-feedback"><?php echo $data['name_err']; ?></span>
+                        </div>
+                        
+                        <div class="form-floating mb-3">
+                            <select name="parent_id" class="form-select" id="parent">
+                                <option value="">None (Top Level Category)</option>
+                                <?php foreach($data['parentCategories'] as $parent) : ?>
+                                    <?php if($parent->id != $data['id']) : ?>
+                                    <option value="<?php echo $parent->id; ?>" <?php echo ($data['parent_id'] == $parent->id) ? 'selected' : ''; ?>><?php echo $parent->name; ?></option>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </select>
+                            <label for="parent"><i class="ph ph-folder me-2"></i>Parent Category</label>
+                        </div>
 
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
-                        <button type="submit" class="btn btn-primary px-4"><i class="fa fa-save me-1"></i> Update Category</button>
-                    </div>
-                </form>
+                        <div class="d-flex gap-3 mt-4">
+                            <a href="<?php echo URLROOT; ?>/categories" class="btn btn-light px-4 flex-grow-1">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4 flex-grow-1 shadow-lg">
+                                UPDATE CATEGORY <i class="ph-bold ph-check-circle ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
