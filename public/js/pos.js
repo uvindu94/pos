@@ -266,32 +266,49 @@ function calculateChange() {
 }
 
 function fetchProducts(query = '') {
+    // Ensure URLROOT is available
+    const baseUrl = typeof URLROOT !== 'undefined' ? URLROOT : 'http://localhost/pos';
+
     $.ajax({
-        url: URLROOT + '/pos/search_products',
+        url: baseUrl + '/pos/search_products',
         method: 'POST',
         data: { query: query },
         success: function (response) {
-            let products = JSON.parse(response);
-            let output = '';
-            if (products.length > 0) {
-                products.forEach(p => {
-                    output += `
-                        <div class="pos-product-card" onclick="addToCart(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${p.price}, ${p.stock})">
-                            <div class="product-info">
-                                <div class="product-name" title="${p.name}">${p.name}</div>
-                                <div class="product-price">${CURRENCY}${parseFloat(p.price).toFixed(2)}</div>
+            try {
+                // Ensure products is an array
+                let products = typeof response === 'string' ? JSON.parse(response) : response;
+
+                let output = '';
+                if (Array.isArray(products) && products.length > 0) {
+                    products.forEach(p => {
+                        const price = parseFloat(p.price) || 0;
+                        const currencySymbol = typeof CURRENCY !== 'undefined' ? CURRENCY : '$';
+
+                        output += `
+                            <div class="pos-product-card" onclick="addToCart(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${price}, ${p.stock})">
+                                <div class="product-info">
+                                    <div class="product-name" title="${p.name}">${p.name}</div>
+                                    <div class="product-price">${currencySymbol}${price.toFixed(2)}</div>
+                                </div>
+                                <div class="product-stock">
+                                    <span class="badge ${p.stock < 10 ? 'bg-danger' : 'bg-secondary'}">Stock: ${p.stock}</span>
+                                </div>
                             </div>
-                            <div class="product-stock">
-                                <span class="badge ${p.stock < 10 ? 'bg-danger' : 'bg-secondary'}">Stock: ${p.stock}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-            } else {
-                output = '<div class="col-12 text-center text-muted p-5">No products found</div>';
+                        `;
+                    });
+                } else {
+                    output = '<div class="col-12 text-center text-muted p-5">No products found</div>';
+                }
+                $('#product-list').html(output);
+                $('#initial-message').hide();
+            } catch (e) {
+                console.error("Error parsing products:", e, response);
+                $('#product-list').html('<div class="col-12 text-center text-danger p-5">Error loading products. Check console.</div>');
             }
-            $('#product-list').html(output);
-            $('#initial-message').hide();
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX Error:", status, error);
+            $('#product-list').html('<div class="col-12 text-center text-danger p-5">Connection error.</div>');
         }
     });
 }
