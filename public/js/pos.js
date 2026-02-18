@@ -1,4 +1,4 @@
-const URLROOT = 'http://localhost/pos'; // Update if needed
+// URLROOT is now provided as a global constant from the view
 let cart = [];
 
 $(document).ready(function () {
@@ -32,7 +32,7 @@ $(document).ready(function () {
                 Swal.fire({
                     icon: 'error',
                     title: 'Insufficient Cash',
-                    text: 'Cash received ($' + cashReceived.toFixed(2) + ') is less than total amount ($' + total.toFixed(2) + ')',
+                    text: 'Cash received (' + CURRENCY + cashReceived.toFixed(2) + ') is less than total amount (' + CURRENCY + total.toFixed(2) + ')',
                     confirmButtonColor: '#4361ee'
                 });
                 return;
@@ -41,7 +41,7 @@ $(document).ready(function () {
 
         Swal.fire({
             title: 'Process Payment?',
-            text: "Total Amount: $" + total.toFixed(2),
+            text: "Total Amount: " + CURRENCY + total.toFixed(2),
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#4361ee',
@@ -220,7 +220,7 @@ function updateCartUI() {
                 <div class="cart-item">
                     <div class="cart-item-details">
                         <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-price">$${item.price.toFixed(2)} x ${item.qty} = <strong>$${total.toFixed(2)}</strong></div>
+                        <div class="cart-item-price">${CURRENCY}${item.price.toFixed(2)} x ${item.qty} = <strong>${CURRENCY}${total.toFixed(2)}</strong></div>
                     </div>
                     <div class="cart-item-controls">
                         <button class="qty-btn" onclick="updateQty(${item.id}, -1)"><i class="fa fa-minus"></i></button>
@@ -234,7 +234,7 @@ function updateCartUI() {
         $('#cart-items').html(html);
     }
 
-    let tax = subtotal * 0.10;
+    let tax = subtotal * (TAX_RATE / 100);
     let discount = parseFloat($('#discount').val()) || 0;
     let grand_total = subtotal + tax - discount;
 
@@ -279,7 +279,7 @@ function fetchProducts(query = '') {
                         <div class="pos-product-card" onclick="addToCart(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${p.price}, ${p.stock})">
                             <div class="product-info">
                                 <div class="product-name" title="${p.name}">${p.name}</div>
-                                <div class="product-price">$${parseFloat(p.price).toFixed(2)}</div>
+                                <div class="product-price">${CURRENCY}${parseFloat(p.price).toFixed(2)}</div>
                             </div>
                             <div class="product-stock">
                                 <span class="badge ${p.stock < 10 ? 'bg-danger' : 'bg-secondary'}">Stock: ${p.stock}</span>

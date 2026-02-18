@@ -60,19 +60,19 @@
     <table>
         <tr>
             <td>Subtotal:</td>
-            <td class="text-right"><?php echo number_format($data['sale']->subtotal, 2); ?></td>
+            <td class="text-right"><?php echo CURRENCY; ?><?php echo number_format($data['sale']->subtotal, 2); ?></td>
         </tr>
         <tr>
             <td>Tax:</td>
-            <td class="text-right"><?php echo number_format($data['sale']->tax, 2); ?></td>
+            <td class="text-right"><?php echo CURRENCY; ?><?php echo number_format($data['sale']->tax, 2); ?></td>
         </tr>
         <tr>
             <td>Discount:</td>
-            <td class="text-right">-<?php echo number_format($data['sale']->discount, 2); ?></td>
+            <td class="text-right">-<?php echo CURRENCY; ?><?php echo number_format($data['sale']->discount, 2); ?></td>
         </tr>
         <tr>
             <td><strong>TOTAL:</strong></td>
-            <td class="text-right"><strong><?php echo number_format($data['sale']->total, 2); ?></strong></td>
+            <td class="text-right"><strong><?php echo CURRENCY; ?><?php echo number_format($data['sale']->total, 2); ?></strong></td>
         </tr>
          <tr>
             <td>Payment:</td>

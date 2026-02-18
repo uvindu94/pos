@@ -11,3 +11,7 @@ define('APPROOT', dirname(dirname(__FILE__)));
 define('URLROOT', 'http://localhost/pos');
 // Site Name
 define('SITENAME', 'PHP POS System');
+
+// Business Configuration
+define('CURRENCY', 'LKR ');
+define('TAX_RATE', 18); // Percentage

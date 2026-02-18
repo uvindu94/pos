@@ -33,7 +33,7 @@
                     <span class="text-secondary fw-bold small text-uppercase ls-wide">Total Revenue</span>
                     <div class="p-2 bg-primary bg-opacity-10 rounded-circle"><i class="ph-fill ph-money text-primary"></i></div>
                 </div>
-                <h2 class="display-6 fw-bold mb-1 text-dark">$<?php echo number_format($data['globalStats']->total_revenue, 2); ?></h2>
+                <h2 class="display-6 fw-bold mb-1 text-dark"><?php echo CURRENCY; ?><?php echo number_format($data['globalStats']->total_revenue, 2); ?></h2>
                 <div class="progress mt-3" style="height: 6px;">
                     <div class="progress-bar bg-primary" style="width: 100%"></div>
                 </div>
@@ -57,7 +57,7 @@
                     <span class="text-secondary fw-bold small text-uppercase ls-wide">Avg. Order Value</span>
                     <div class="p-2 bg-purple bg-opacity-10 rounded-circle" style="color: #8B5CF6;"><i class="ph-fill ph-chart-pie"></i></div>
                 </div>
-                <h2 class="display-6 fw-bold mb-1 text-dark">$<?php echo number_format($data['globalStats']->avg_order_value, 2); ?></h2>
+                <h2 class="display-6 fw-bold mb-1 text-dark"><?php echo CURRENCY; ?><?php echo number_format($data['globalStats']->avg_order_value, 2); ?></h2>
                 <div class="progress mt-3" style="height: 6px;">
                     <div class="progress-bar" style="width: 100%; background-color: #8B5CF6;"></div>
                 </div>
@@ -96,7 +96,7 @@
                                 </div>
                                 <div class="text-end ms-3">
                                     <div class="fw-bold text-primary"><?php echo $product->total_qty; ?> units</div>
-                                    <div class="small text-muted">$<?php echo number_format($product->total_revenue, 2); ?></div>
+                                    <div class="small text-muted"><?php echo CURRENCY; ?><?php echo number_format($product->total_revenue, 2); ?></div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -133,9 +133,9 @@
                                 <span class="badge bg-secondary bg-opacity-10 text-dark border border-secondary border-opacity-20 px-2 py-1"><?php echo $sale->invoice_id; ?></span>
                             </td>
                             <td class="align-middle fw-medium"><?php echo $sale->cashier_name; ?></td>
-                            <td class="align-middle text-end text-danger">$<?php echo number_format($sale->discount, 2); ?></td>
+                            <td class="align-middle text-end text-danger"><?php echo CURRENCY; ?><?php echo number_format($sale->discount, 2); ?></td>
                             <td class="align-middle text-end">
-                                <span class="h6 mb-0 fw-bold text-dark">$<?php echo number_format($sale->total, 2); ?></span>
+                                <span class="h6 mb-0 fw-bold text-dark"><?php echo CURRENCY; ?><?php echo number_format($sale->total, 2); ?></span>
                             </td>
                             <td class="align-middle text-center">
                                 <?php 
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
         yaxis: {
             labels: {
                 formatter: function (value) {
-                    return "$" + value.toLocaleString();
+                    return CURRENCY + value.toLocaleString();
                 },
                 style: {
                     colors: '#6B7280',
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             y: {
                 formatter: function (value) {
-                    return "$" + value.toLocaleString();
+                    return CURRENCY + value.toLocaleString();
                 }
             }
         },

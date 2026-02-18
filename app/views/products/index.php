@@ -55,7 +55,7 @@
                         <div class="p-4">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <h5 class="fw-bold text-dark mb-0 text-truncate" title="<?php echo $product->name; ?>"><?php echo $product->name; ?></h5>
-                                <span class="h5 fw-bold text-primary mb-0">$<?php echo number_format($product->price, 2); ?></span>
+                                <span class="h5 fw-bold text-primary mb-0"><?php echo CURRENCY; ?><?php echo number_format($product->price, 2); ?></span>
                             </div>
                             <div class="d-flex align-items-center mb-3">
                                 <span class="badge bg-light text-secondary border small py-1 px-2">

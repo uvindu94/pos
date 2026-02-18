@@ -34,7 +34,7 @@
                          <i class="fa fa-dollar-sign text-primary"></i>
                     </div>
                 </div>
-                <h2 class="display-5 mb-1">$<?php echo number_format($data['totalRevenue'], 2); ?></h2>
+                <h2 class="display-5 mb-1"><?php echo CURRENCY; ?><?php echo number_format($data['totalRevenue'], 2); ?></h2>
                 <p class="text-success small mb-0"><i class="fa fa-arrow-up me-1"></i> Performance on track</p>
                 <div class="mt-4 pt-4 border-top">
                     <!-- Orders Today (Compact Inside Bento) -->
@@ -77,7 +77,7 @@
                                         <div class="small text-muted"><?php echo date('H:i A', strtotime($sale->created_at)); ?></div>
                                     </td>
                                     <td class="text-end">
-                                        <span class="h6 mb-0 fw-bold text-dark">$<?php echo number_format($sale->total, 2); ?></span>
+                                        <span class="h6 mb-0 fw-bold text-dark"><?php echo CURRENCY; ?><?php echo number_format($sale->total, 2); ?></span>
                                     </td>
                                     <td class="text-center">
                                         <?php 

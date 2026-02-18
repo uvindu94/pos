@@ -50,22 +50,22 @@
             <div class="total-section">
                 <div class="total-row">
                     <span class="total-label">Subtotal</span>
-                    <span class="total-value">$<span id="subtotal">0.00</span></span>
+                    <span class="total-value"><?php echo CURRENCY; ?><span id="subtotal">0.00</span></span>
                 </div>
                 <div class="total-row">
-                    <span class="total-label">Tax (10%)</span>
-                    <span class="total-value">$<span id="tax">0.00</span></span>
+                    <span class="total-label">Tax (<?php echo TAX_RATE; ?>%)</span>
+                    <span class="total-value"><?php echo CURRENCY; ?><span id="tax">0.00</span></span>
                 </div>
                 <div class="total-row align-items-center">
                     <span class="total-label">Discount</span>
                     <div class="input-group input-group-sm w-25">
-                         <span class="input-group-text">$</span>
+                         <span class="input-group-text"><?php echo CURRENCY; ?></span>
                          <input type="number" id="discount" class="form-control text-end" value="0">
                     </div>
                 </div>
                 <div class="total-row final">
                     <span class="total-label">Total</span>
-                    <span class="total-value">$<span id="grand_total">0.00</span></span>
+                    <span class="total-value"><?php echo CURRENCY; ?><span id="grand_total">0.00</span></span>
                 </div>
             </div>
 
@@ -73,14 +73,14 @@
             <div class="cash-input-container" id="cash-section">
                 <label class="form-label fw-bold text-muted mb-1 small">Cash Received:</label>
                 <div class="input-group">
-                    <span class="input-group-text">$</span>
+                    <span class="input-group-text"><?php echo CURRENCY; ?></span>
                     <input type="number" step="0.01" id="cash_received" class="form-control" placeholder="0.00">
                 </div>
             </div>
 
             <div id="change-display" style="display: none;">
                 <div class="change-label">Change Due</div>
-                <div class="change-amount">$<span id="change_amount">0.00</span></div>
+                <div class="change-amount"><?php echo CURRENCY; ?><span id="change_amount">0.00</span></div>
             </div>
 
             <!-- Payment Methods -->
@@ -114,6 +114,13 @@
         </div>
     </div>
 </div>
+
+<!-- Global JS Config -->
+<script>
+    const CURRENCY = '<?php echo CURRENCY; ?>';
+    const TAX_RATE = <?php echo TAX_RATE; ?>;
+    const URLROOT = '<?php echo URLROOT; ?>';
+</script>
 
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
