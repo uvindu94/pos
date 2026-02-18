@@ -75,7 +75,7 @@
                                     <a href="<?php echo URLROOT; ?>/products/restock/<?php echo $product->id; ?>" class="btn btn-light btn-sm rounded-pill p-2" title="Restock">
                                         <i class="ph-bold ph-package text-success"></i>
                                     </a>
-                                    <form action="<?php echo URLROOT; ?>/products/delete/<?php echo $product->id; ?>" method="post" onsubmit="return confirm('Delete this product permanently?');" class="d-inline">
+                                    <form action="<?php echo URLROOT; ?>/products/delete/<?php echo $product->id; ?>" method="post" class="d-inline confirm-delete" data-title="Delete Product?" data-text="Permanently remove '<?php echo $product->name; ?>' from inventory?">
                                         <button type="submit" class="btn btn-light btn-sm rounded-pill p-2" title="Delete">
                                             <i class="ph-bold ph-trash text-danger"></i>
                                         </button>

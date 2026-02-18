@@ -60,7 +60,7 @@
                                         <i class="fa fa-pen"></i>
                                     </a>
                                     <!-- Delete Form -->
-                                    <form class="d-inline" action="<?php echo URLROOT; ?>/categories/delete/<?php echo $category->id; ?>" method="post" onsubmit="return confirm('Are you sure you want to delete this category?');">
+                                    <form class="d-inline confirm-delete" action="<?php echo URLROOT; ?>/categories/delete/<?php echo $category->id; ?>" method="post" data-title="Delete Category?" data-text="This will permanently delete '<?php echo $category->name; ?>'. Products in this category may become uncategorized.">
                                         <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="fa fa-trash"></i>
                                         </button>

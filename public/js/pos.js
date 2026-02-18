@@ -43,7 +43,12 @@ $(document).ready(function () {
     // Checkout
     $('#btn-checkout').click(function () {
         if (cart.length === 0) {
-            alert('Cart is empty');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Cart is empty',
+                text: 'Please add some products to the cart first.',
+                confirmButtonColor: '#4361ee'
+            });
             return;
         }
 
@@ -54,46 +59,73 @@ $(document).ready(function () {
         if (payment_method === 'cash') {
             let cashReceived = parseFloat($('#cash_received').val()) || 0;
             if (cashReceived < total) {
-                alert('Insufficient cash received. Total: $' + total.toFixed(2));
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Insufficient Cash',
+                    text: 'Cash received ($' + cashReceived.toFixed(2) + ') is less than total amount ($' + total.toFixed(2) + ')',
+                    confirmButtonColor: '#4361ee'
+                });
                 return;
             }
         }
 
-        if (!confirm('Process Payment?')) return;
+        Swal.fire({
+            title: 'Process Payment?',
+            text: "Total Amount: $" + total.toFixed(2),
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#4361ee',
+            cancelButtonColor: '#secondary',
+            confirmButtonText: 'Yes, Complete Sale'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let subtotal = parseFloat($('#subtotal').text());
+                let tax = parseFloat($('#tax').text());
+                let discount = parseFloat($('#discount').val()) || 0;
 
-        let subtotal = parseFloat($('#subtotal').text());
-        let tax = parseFloat($('#tax').text());
-        let discount = parseFloat($('#discount').val()) || 0;
+                let saleData = {
+                    cart: cart,
+                    subtotal: subtotal,
+                    tax: tax,
+                    discount: discount,
+                    total: total,
+                    payment_method: payment_method
+                };
 
-        let saleData = {
-            cart: cart,
-            subtotal: subtotal,
-            tax: tax,
-            discount: discount,
-            total: total,
-            payment_method: payment_method
-        };
+                $.ajax({
+                    url: URLROOT + '/pos/checkout',
+                    method: 'POST',
+                    data: JSON.stringify(saleData),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        let res = JSON.parse(response);
+                        if (res.status === 'success') {
+                            cart = [];
+                            updateCartUI();
+                            $('#discount').val(0);
+                            $('#cash_received').val('');
+                            $('#change-display').hide();
+                            $('#product-search').val('');
 
-        $.ajax({
-            url: URLROOT + '/pos/checkout',
-            method: 'POST',
-            data: JSON.stringify(saleData),
-            contentType: 'application/json',
-            success: function (response) {
-                let res = JSON.parse(response);
-                if (res.status === 'success') {
-                    cart = [];
-                    updateCartUI();
-                    $('#discount').val(0);
-                    $('#cash_received').val('');
-                    $('#change-display').hide();
-                    $('#product-search').val('');
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Sale Completed!',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
 
-                    // Open Receipt
-                    window.open(URLROOT + '/pos/receipt/' + res.sale_id, '_blank', 'width=400,height=600');
-                } else {
-                    alert(res.message);
-                }
+                            // Open Receipt
+                            window.open(URLROOT + '/pos/receipt/' + res.sale_id, '_blank', 'width=400,height=600');
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Checkout Failed',
+                                text: res.message,
+                                confirmButtonColor: '#4361ee'
+                            });
+                        }
+                    }
+                });
             }
         });
     });
@@ -128,13 +160,23 @@ function addToCart(id, name, price, stock) {
     let existing = cart.find(item => item.id === id);
     if (existing) {
         if (existing.qty + 1 > stock) {
-            alert('Insufficient stock for ' + name + '. Only ' + stock + ' available.');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Stock Limit Reached',
+                text: 'Only ' + stock + ' units of ' + name + ' available in inventory.',
+                confirmButtonColor: '#4361ee'
+            });
             return;
         }
         existing.qty++;
     } else {
         if (1 > stock) {
-            alert('Item ' + name + ' is out of stock.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Out of Stock',
+                text: name + ' is currently unavailable.',
+                confirmButtonColor: '#4361ee'
+            });
             return;
         }
         cart.push({ id: id, name: name, price: parseFloat(price), qty: 1, stock: stock });
@@ -151,7 +193,12 @@ function updateQty(id, delta) {
     let item = cart.find(item => item.id === id);
     if (item) {
         if (delta > 0 && item.qty + delta > item.stock) {
-            alert('Insufficient stock. Only ' + item.stock + ' available.');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Stock Limit',
+                text: 'Cannot exceed available stock of ' + item.stock + ' units.',
+                confirmButtonColor: '#4361ee'
+            });
             return;
         }
         item.qty += delta;
@@ -168,7 +215,12 @@ function setQty(id, val) {
     if (item) {
         let newQty = parseInt(val) || 0;
         if (newQty > item.stock) {
-            alert('Insufficient stock. Only ' + item.stock + ' available.');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Stock Limit',
+                text: 'Only ' + item.stock + ' units available. Quantity capped.',
+                confirmButtonColor: '#4361ee'
+            });
             item.qty = item.stock; // Cap at max
         } else {
             item.qty = newQty;
