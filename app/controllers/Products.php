@@ -10,10 +10,21 @@ class Products extends Controller {
     }
 
     public function index(){
-        $products = $this->productModel->getProducts();
+        // Pagination logic
+        $limit = 8;
+        $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+        $page = $page < 1 ? 1 : $page;
+        $offset = ($page - 1) * $limit;
+
+        $totalProducts = $this->productModel->getProductsCount();
+        $products = $this->productModel->getProducts($limit, $offset);
+        $totalPages = ceil($totalProducts / $limit);
 
         $data = [
-            'products' => $products
+            'products' => $products,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'totalResults' => $totalProducts
         ];
 
         $this->view('products/index', $data);

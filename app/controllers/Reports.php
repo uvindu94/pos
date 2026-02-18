@@ -18,7 +18,16 @@ class Reports extends Controller {
         $start = isset($_GET['start']) ? $_GET['start'] : date('Y-m-01');
         $end = isset($_GET['end']) ? $_GET['end'] : date('Y-m-d');
 
-        $sales = $this->saleModel->getSalesByRange($start, $end);
+        // Pagination for Transaction Table
+        $limit = 10;
+        $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+        $page = $page < 1 ? 1 : $page;
+        $offset = ($page - 1) * $limit;
+
+        $totalSales = $this->saleModel->getSalesCountByRange($start, $end);
+        $sales = $this->saleModel->getSalesByRange($start, $end, $limit, $offset);
+        $totalPages = ceil($totalSales / $limit);
+
         $dailyStats = $this->saleModel->getDailySalesStats($start, $end);
         $topProducts = $this->saleModel->getTopSellingProducts(5);
         $globalStats = $this->saleModel->getGlobalStats($start, $end);
@@ -29,7 +38,10 @@ class Reports extends Controller {
             'topProducts' => $topProducts,
             'globalStats' => $globalStats,
             'start' => $start,
-            'end' => $end
+            'end' => $end,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'totalResults' => $totalSales
         ];
 
         $this->view('reports/sales', $data);

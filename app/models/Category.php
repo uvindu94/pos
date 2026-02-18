@@ -6,12 +6,28 @@ class Category {
         $this->db = new Database;
     }
 
-    public function getCategories(){
-        $this->db->query('SELECT c.*, p.name as parent_name 
-                          FROM categories c 
-                          LEFT JOIN categories p ON c.parent_id = p.id 
-                          ORDER BY COALESCE(c.parent_id, c.id), c.parent_id IS NOT NULL, c.name');
+    public function getCategories($limit = null, $offset = null){
+        $sql = 'SELECT c.*, p.name as parent_name 
+                FROM categories c 
+                LEFT JOIN categories p ON c.parent_id = p.id 
+                ORDER BY COALESCE(c.parent_id, c.id), c.parent_id IS NOT NULL, c.name';
+        
+        if($limit !== null && $offset !== null){
+            $sql .= ' LIMIT :limit OFFSET :offset';
+            $this->db->query($sql);
+            $this->db->bind(':limit', (int)$limit);
+            $this->db->bind(':offset', (int)$offset);
+        } else {
+            $this->db->query($sql);
+        }
+        
         return $this->db->resultSet();
+    }
+
+    public function getCategoriesCount(){
+        $this->db->query('SELECT COUNT(*) as count FROM categories');
+        $row = $this->db->single();
+        return $row->count;
     }
 
     public function getCategoryById($id){

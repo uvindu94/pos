@@ -6,12 +6,28 @@ class Product {
         $this->db = new Database;
     }
 
-    public function getProducts(){
-        $this->db->query('SELECT products.*, categories.name as category_name 
-                          FROM products 
-                          LEFT JOIN categories ON products.category_id = categories.id
-                          ORDER BY products.created_at DESC');
+    public function getProducts($limit = null, $offset = null){
+        $sql = 'SELECT products.*, categories.name as category_name 
+                FROM products 
+                LEFT JOIN categories ON products.category_id = categories.id
+                ORDER BY products.created_at DESC';
+        
+        if($limit !== null && $offset !== null){
+            $sql .= ' LIMIT :limit OFFSET :offset';
+            $this->db->query($sql);
+            $this->db->bind(':limit', (int)$limit);
+            $this->db->bind(':offset', (int)$offset);
+        } else {
+            $this->db->query($sql);
+        }
+
         return $this->db->resultSet();
+    }
+
+    public function getProductsCount(){
+        $this->db->query('SELECT COUNT(*) as count FROM products');
+        $row = $this->db->single();
+        return $row->count;
     }
 
     public function addProduct($data){

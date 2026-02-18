@@ -8,10 +8,21 @@ class Categories extends Controller {
     }
 
     public function index(){
-        $categories = $this->categoryModel->getCategories();
+        // Pagination logic
+        $limit = 10;
+        $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+        $page = $page < 1 ? 1 : $page;
+        $offset = ($page - 1) * $limit;
+
+        $totalCategories = $this->categoryModel->getCategoriesCount();
+        $categories = $this->categoryModel->getCategories($limit, $offset);
+        $totalPages = ceil($totalCategories / $limit);
 
         $data = [
-            'categories' => $categories
+            'categories' => $categories,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'totalResults' => $totalCategories
         ];
 
         $this->view('categories/index', $data);

@@ -87,5 +87,39 @@
             </table>
         </div>
     </div>
+    <div class="card-footer bg-white py-3 px-4 border-top">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-secondary small">
+                Showing <span class="fw-bold text-dark"><?php echo count($data['categories']); ?></span> of <span class="fw-bold text-dark"><?php echo $data['totalResults']; ?></span> categories
+            </div>
+            <?php if($data['totalPages'] > 1) : ?>
+            <nav aria-label="Category pagination">
+                <ul class="pagination mb-0 gap-1">
+                    <li class="page-item <?php echo ($data['currentPage'] <= 1) ? 'disabled' : ''; ?>">
+                        <a class="page-link border-0 rounded-circle shadow-none" href="?page=<?php echo $data['currentPage'] - 1; ?>">
+                            <i class="ph-bold ph-caret-left"></i>
+                        </a>
+                    </li>
+                    
+                    <?php 
+                        $startP = max(1, $data['currentPage'] - 2);
+                        $endP = min($data['totalPages'], $data['currentPage'] + 2);
+                        for($i = $startP; $i <= $endP; $i++) : 
+                    ?>
+                        <li class="page-item <?php echo ($data['currentPage'] == $i) ? 'active' : ''; ?>">
+                            <a class="page-link border-0 rounded-circle shadow-none px-3 fw-bold" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                        </li>
+                    <?php endfor; ?>
+
+                    <li class="page-item <?php echo ($data['currentPage'] >= $data['totalPages']) ? 'disabled' : ''; ?>">
+                        <a class="page-link border-0 rounded-circle shadow-none" href="?page=<?php echo $data['currentPage'] + 1; ?>">
+                            <i class="ph-bold ph-caret-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <?php endif; ?>
+        </div>
+    </div>
 </div>
 <?php require APPROOT . '/views/inc/footer.php'; ?>

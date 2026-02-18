@@ -98,6 +98,42 @@
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
+    <!-- Pagination -->
+    <?php if($data['totalPages'] > 1) : ?>
+    <div class="row mt-5">
+        <div class="col-12 d-flex justify-content-between align-items-center glass-card p-3 shadow-sm border-0 bg-white">
+            <div class="text-secondary small">
+                Showing <span class="fw-bold text-dark"><?php echo count($data['products']); ?></span> of <span class="fw-bold text-dark"><?php echo $data['totalResults']; ?></span> products
+            </div>
+            <nav aria-label="Product pagination">
+                <ul class="pagination mb-0 gap-1">
+                    <li class="page-item <?php echo ($data['currentPage'] <= 1) ? 'disabled' : ''; ?>">
+                        <a class="page-link border-0 rounded-circle shadow-none py-2" href="?page=<?php echo $data['currentPage'] - 1; ?>">
+                            <i class="ph-bold ph-caret-left"></i>
+                        </a>
+                    </li>
+                    
+                    <?php 
+                        $startPage = max(1, $data['currentPage'] - 2);
+                        $endPage = min($data['totalPages'], $data['currentPage'] + 2);
+                        
+                        for($i = $startPage; $i <= $endPage; $i++) : 
+                    ?>
+                        <li class="page-item <?php echo ($data['currentPage'] == $i) ? 'active' : ''; ?>">
+                            <a class="page-link border-0 rounded-circle shadow-none py-2 px-3 fw-bold" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                        </li>
+                    <?php endfor; ?>
+
+                    <li class="page-item <?php echo ($data['currentPage'] >= $data['totalPages']) ? 'disabled' : ''; ?>">
+                        <a class="page-link border-0 rounded-circle shadow-none py-2" href="?page=<?php echo $data['currentPage'] + 1; ?>">
+                            <i class="ph-bold ph-caret-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
 
 <script>

@@ -166,4 +166,68 @@ foreach ($products as $p) {
     }
 }
 
+// Transaction Seeding
+echo "Generating 25 random transactions...\n";
+
+// Get all products to pick from
+$db->query("SELECT id, price, sale_price FROM products");
+$insertedProducts = $db->resultSet();
+$paymentMethods = ['cash', 'card', 'cheque'];
+
+for ($i = 0; $i < 25; $i++) {
+    $numItems = rand(1, 5);
+    $selectedProducts = [];
+    $subtotal = 0;
+    
+    for ($j = 0; $j < $numItems; $j++) {
+        $p = $insertedProducts[array_rand($insertedProducts)];
+        $qty = rand(1, 3);
+        $price = (!empty($p->sale_price)) ? $p->sale_price : $p->price;
+        $total = $price * $qty;
+        
+        $selectedProducts[] = [
+            'id' => $p->id,
+            'qty' => $qty,
+            'price' => $price,
+            'total' => $total
+        ];
+        $subtotal += $total;
+    }
+    
+    $tax = $subtotal * (TAX_RATE / 100);
+    $discount = (rand(0, 10) > 8) ? rand(5, 20) : 0; // 20% chance of discount
+    $grandTotal = $subtotal + $tax - $discount;
+    $paymentMethod = $paymentMethods[array_rand($paymentMethods)];
+    $invoiceId = 'INV-' . strtoupper(substr(md5(uniqid()), 0, 8));
+    
+    // Random date within last 30 days
+    $randomDays = rand(0, 30);
+    $createdAt = date('Y-m-d H:i:s', strtotime("-$randomDays days " . rand(0, 23) . ":" . rand(0, 59) . ":" . rand(0, 59)));
+
+    // Insert Sale
+    $db->query("INSERT INTO sales (invoice_id, subtotal, tax, discount, total, payment_method, created_at) VALUES (:invoice_id, :subtotal, :tax, :discount, :total, :payment_method, :created_at)");
+    $db->bind(':invoice_id', $invoiceId);
+    $db->bind(':subtotal', $subtotal);
+    $db->bind(':tax', $tax);
+    $db->bind(':discount', $discount);
+    $db->bind(':total', $grandTotal);
+    $db->bind(':payment_method', $paymentMethod);
+    $db->bind(':created_at', $createdAt);
+    $db->execute();
+    
+    $saleId = $db->lastInsertId();
+    
+    // Insert Sale Items
+    foreach ($selectedProducts as $item) {
+        $db->query("INSERT INTO sale_items (sale_id, product_id, quantity, price, total) VALUES (:sale_id, :product_id, :quantity, :price, :total)");
+        $db->bind(':sale_id', $saleId);
+        $db->bind(':product_id', $item['id']);
+        $db->bind(':quantity', $item['qty']);
+        $db->bind(':price', $item['price']);
+        $db->bind(':total', $item['total']);
+        $db->execute();
+    }
+}
+
+echo "Seeded 25 transactions successfully!\n";
 echo "Seeding completed successfully!\n";

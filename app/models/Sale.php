@@ -104,15 +104,33 @@ class Sale {
 
     // --- Analytics Methods ---
 
-    public function getSalesByRange($start, $end){
-        $this->db->query('SELECT s.*, u.name as cashier_name 
-                          FROM sales s 
-                          JOIN users u ON s.user_id = u.id 
-                          WHERE DATE(s.created_at) BETWEEN :start AND :end 
-                          ORDER BY s.created_at DESC');
+    public function getSalesByRange($start, $end, $limit = null, $offset = null){
+        $sql = 'SELECT s.*, u.name as cashier_name 
+                FROM sales s 
+                JOIN users u ON s.user_id = u.id 
+                WHERE DATE(s.created_at) BETWEEN :start AND :end 
+                ORDER BY s.created_at DESC';
+        
+        if($limit !== null && $offset !== null){
+            $sql .= ' LIMIT :limit OFFSET :offset';
+            $this->db->query($sql);
+            $this->db->bind(':limit', (int)$limit);
+            $this->db->bind(':offset', (int)$offset);
+        } else {
+            $this->db->query($sql);
+        }
+
         $this->db->bind(':start', $start);
         $this->db->bind(':end', $end);
         return $this->db->resultSet();
+    }
+
+    public function getSalesCountByRange($start, $end){
+        $this->db->query('SELECT COUNT(*) as count FROM sales WHERE DATE(created_at) BETWEEN :start AND :end');
+        $this->db->bind(':start', $start);
+        $this->db->bind(':end', $end);
+        $row = $this->db->single();
+        return $row->count;
     }
 
     public function getDailySalesStats($start, $end){
