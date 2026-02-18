@@ -1,0 +1,225 @@
+const URLROOT = 'http://localhost/pos'; // Update if needed
+let cart = [];
+
+$(document).ready(function () {
+    // Search Product
+    $('#search_product').on('keyup', function () {
+        let query = $(this).val();
+        if (query.length > 1) {
+            $.ajax({
+                url: URLROOT + '/pos/search_products',
+                method: 'POST',
+                data: { query: query },
+                success: function (response) {
+                    let products = JSON.parse(response);
+                    let output = '';
+                    if (products.length > 0) {
+                        products.forEach(p => {
+                            output += `
+                                <div class="pos-product-card" onclick="addToCart(${p.id}, '${p.name}', ${p.price})">
+                                    <div class="product-info">
+                                        <div class="product-name" title="${p.name}">${p.name}</div>
+                                        <div class="product-price">$${parseFloat(p.price).toFixed(2)}</div>
+                                    </div>
+                                    <div class="product-stock">
+                                        <span class="badge ${p.stock < 10 ? 'bg-danger' : 'bg-secondary'}">Stock: ${p.stock}</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        output = '<div class="col-12 text-center text-muted p-5">No products found</div>';
+                    }
+                    $('#product-list').html(output);
+                    $('#initial-message').hide();
+                }
+            });
+        } else {
+            // If empty, you might want to show initial message again 
+            // or keep last results. Let's show search results if any.
+        }
+    });
+
+    // Checkout
+    $('#btn-checkout').click(function () {
+        if (cart.length === 0) {
+            alert('Cart is empty');
+            return;
+        }
+
+        let payment_method = $('input[name="payment_method"]:checked').val();
+        let total = parseFloat($('#grand_total').text());
+
+        // Validate cash payment
+        if (payment_method === 'cash') {
+            let cashReceived = parseFloat($('#cash_received').val()) || 0;
+            if (cashReceived < total) {
+                alert('Insufficient cash received. Total: $' + total.toFixed(2));
+                return;
+            }
+        }
+
+        if (!confirm('Process Payment?')) return;
+
+        let subtotal = parseFloat($('#subtotal').text());
+        let tax = parseFloat($('#tax').text());
+        let discount = parseFloat($('#discount').val()) || 0;
+
+        let saleData = {
+            cart: cart,
+            subtotal: subtotal,
+            tax: tax,
+            discount: discount,
+            total: total,
+            payment_method: payment_method
+        };
+
+        $.ajax({
+            url: URLROOT + '/pos/checkout',
+            method: 'POST',
+            data: JSON.stringify(saleData),
+            contentType: 'application/json',
+            success: function (response) {
+                let res = JSON.parse(response);
+                if (res.status === 'success') {
+                    cart = [];
+                    updateCartUI();
+                    $('#discount').val(0);
+                    $('#cash_received').val('');
+                    $('#change-display').hide();
+                    $('#product-search').val('');
+
+                    // Open Receipt
+                    window.open(URLROOT + '/pos/receipt/' + res.sale_id, '_blank', 'width=400,height=600');
+                } else {
+                    alert(res.message);
+                }
+            }
+        });
+    });
+
+    // Discount change
+    $('#discount').on('input', function () {
+        updateCartUI();
+    });
+
+    // Cash received change calculation
+    $('#cash_received').on('input', function () {
+        calculateChange();
+    });
+
+    // Payment method change (Radio buttons)
+    $('input[name="payment_method"]').on('change', function () {
+        if ($(this).val() === 'cash') {
+            $('#cash-section').slideDown();
+        } else {
+            $('#cash-section').slideUp();
+            $('#change-display').slideUp();
+        }
+    });
+
+    // Initial state
+    if ($('input[name="payment_method"]:checked').val() !== 'cash') {
+        $('#cash-section').hide();
+    }
+});
+
+function addToCart(id, name, price) {
+    let existing = cart.find(item => item.id === id);
+    if (existing) {
+        existing.qty++;
+    } else {
+        cart.push({ id: id, name: name, price: parseFloat(price), qty: 1 });
+    }
+    updateCartUI();
+}
+
+function removeFromCart(id) {
+    cart = cart.filter(item => item.id !== id);
+    updateCartUI();
+}
+
+function updateQty(id, delta) {
+    let item = cart.find(item => item.id === id);
+    if (item) {
+        item.qty += delta;
+        if (item.qty <= 0) {
+            removeFromCart(id);
+        } else {
+            updateCartUI();
+        }
+    }
+}
+
+function setQty(id, val) {
+    let item = cart.find(item => item.id === id);
+    if (item) {
+        item.qty = parseInt(val) || 0;
+        if (item.qty <= 0) {
+            removeFromCart(id);
+        } else {
+            updateCartUI();
+        }
+    }
+}
+
+function updateCartUI() {
+    let html = '';
+    let subtotal = 0;
+
+    if (cart.length === 0) {
+        $('#empty-cart').show();
+        $('#cart-items').html('<div id="empty-cart"><i class="fa fa-shopping-basket empty-icon d-block"></i><p>Your cart is empty</p></div>');
+    } else {
+        $('#empty-cart').hide();
+        cart.forEach(item => {
+            let total = item.price * item.qty;
+            subtotal += total;
+            html += `
+                <div class="cart-item">
+                    <div class="cart-item-details">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">$${item.price.toFixed(2)} x ${item.qty} = <strong>$${total.toFixed(2)}</strong></div>
+                    </div>
+                    <div class="cart-item-controls">
+                        <button class="qty-btn" onclick="updateQty(${item.id}, -1)"><i class="fa fa-minus"></i></button>
+                        <span class="qty-display">${item.qty}</span>
+                        <button class="qty-btn" onclick="updateQty(${item.id}, 1)"><i class="fa fa-plus"></i></button>
+                        <button class="remove-item ms-2" onclick="removeFromCart(${item.id})"><i class="fa fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
+        });
+        $('#cart-items').html(html);
+    }
+
+    let tax = subtotal * 0.10;
+    let discount = parseFloat($('#discount').val()) || 0;
+    let grand_total = subtotal + tax - discount;
+
+    $('#subtotal').text(subtotal.toFixed(2));
+    $('#tax').text(tax.toFixed(2));
+    $('#grand_total').text(grand_total.toFixed(2));
+
+    // Update count
+    let totalQty = cart.reduce((acc, item) => acc + item.qty, 0);
+    $('#cart-count').text(totalQty + ' Items');
+
+    // Recalculate change if cash is active
+    if ($('input[name="payment_method"]:checked').val() === 'cash') {
+        calculateChange();
+    }
+}
+
+function calculateChange() {
+    let total = parseFloat($('#grand_total').text()) || 0;
+    let cashReceived = parseFloat($('#cash_received').val()) || 0;
+
+    if (cashReceived >= total && cashReceived > 0) {
+        let change = cashReceived - total;
+        $('#change_amount').text(change.toFixed(2));
+        $('#change-display').slideDown();
+    } else {
+        $('#change-display').slideUp();
+    }
+}
